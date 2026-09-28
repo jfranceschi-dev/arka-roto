@@ -12,11 +12,12 @@ spec:
     spec:
       containers:
         - name: servicio-solicitudes
-          image: servicio-solicitudes:latest
+          image: servicio-solicitudes:local
+          imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 8080 }]
           env:
             - name: NOTIFICACIONES_URL
-              value: http://localhost:8080/eventos/solicitud-enviada
+              value: http://servicio-notificaciones:8080/eventos/solicitud-enviada
 ---
 apiVersion: v1
 kind: Service

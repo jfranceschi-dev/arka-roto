@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn -q clean package -DskipTests
 FROM eclipse-temurin:25-jre
 WORKDIR /app
-COPY --from=build /build/target/app.jar app.jar
+COPY --from=build /build/target/*.jar app.jar
 RUN useradd -r -u 1001 appuser && chown -R appuser /app
 USER appuser
 EXPOSE 8080
