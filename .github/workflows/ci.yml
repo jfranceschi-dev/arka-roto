@@ -24,6 +24,10 @@ jobs:
           java-version: '25'
           cache: maven
 
+      - name: Compilar y probar ${{ matrix.servicio }}
+        run: mvn -B verify
+        working-directory: ${{ matrix.servicio }}
+
       # BUG 3: se construye y publica ANTES de probar (se entrega sin verificar)
       - name: Login al registro
         uses: docker/login-action@v3
@@ -31,14 +35,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           # BUG 4: credencial HARDCODEADA (debe venir de secrets)
-          password: ghp_token_pegado_a_mano_1234567890
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Construir y publicar ${{ matrix.servicio }}
         working-directory: ${{ matrix.servicio }}
         run: |
-          IMG=ghcr.io/${{ github.repository }}/${{ matrix.servicio }}:${{ github.sha }}
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMG=ghcr.io/$REPO_NAME/${{ matrix.servicio }}:${{ github.sha }}
           docker build -t "$IMG" .
           docker push "$IMG"
 
-      - name: Compilar y probar ${{ matrix.servicio }}
-        run: mvn -B verify
-        working-directory: ${{ matrix.servicio }}
+
