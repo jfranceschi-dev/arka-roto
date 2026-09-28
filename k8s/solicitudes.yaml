@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicio-solicitudes
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: servicio-solicitudes }
+  template:
+    metadata:
+      labels: { app: servicio-solicitudes }
+    spec:
+      containers:
+        - name: servicio-solicitudes
+          image: servicio-solicitudes:latest
+          ports: [{ containerPort: 8080 }]
+          env:
+            - name: NOTIFICACIONES_URL
+              value: http://localhost:8080/eventos/solicitud-enviada
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-solicitudes
+spec:
+  type: NodePort
+  selector: { app: servicio-solicitudes }
+  ports: [{ port: 8080, targetPort: 8080 }]
